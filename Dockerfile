@@ -6,10 +6,11 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     libicu-dev \
-    zlib1g-dev \
+    libzip-dev \
     zip \
     unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure zip \
     && docker-php-ext-install gd pdo_mysql intl zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
