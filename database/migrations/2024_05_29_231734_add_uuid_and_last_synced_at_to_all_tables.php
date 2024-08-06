@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Uuid;
 
 class AddUuidAndLastSyncedAtToAllTables extends Migration
 {
@@ -18,7 +19,8 @@ class AddUuidAndLastSyncedAtToAllTables extends Migration
             }
             Schema::table($tableName, function (Blueprint $table) use ($tableName) {
                 if (!Schema::hasColumn($tableName, 'uuid')) {
-                    $table->uuid('uuid')->unique()->default(1);
+                    $uuid = Uuid::uuid4();
+                    $table->uuid('uuid')->unique()->default($uuid->toString());
                 }
                 if (!Schema::hasColumn($tableName, 'last_synced_at')) {
                     $table->timestamp('last_synced_at')->nullable();
