@@ -14,7 +14,6 @@ class AddUuidAndLastSyncedAtToAllTables extends Migration
         foreach ($tables as $table) {
             $tableName = array_values((array)$table)[0];
 
-            // Agregar columnas sin valores por defecto
             Schema::table($tableName, function (Blueprint $table) use ($tableName) {
                 if (!Schema::hasColumn($tableName, 'uuid')) {
                     $table->uuid('uuid')->unique()->nullable();
@@ -23,11 +22,17 @@ class AddUuidAndLastSyncedAtToAllTables extends Migration
                     $table->timestamp('last_synced_at')->nullable();
                 }
             });
+        }
 
-            // Actualizar las filas existentes para establecer el valor de `uuid`
-            DB::table($tableName)->update(['uuid' => DB::raw('UUID()')]);
+        // Actualizar las filas existentes para establecer el valor de `uuid`
+        foreach ($tables as $table) {
+            $tableName = array_values((array)$table)[0];
+            DB::table($tableName)->whereNull('uuid')->update(['uuid' => DB::raw('UUID()')]);
+        }
 
-            // Establecer la columna `uuid` como `NOT NULL`
+        // Establecer la columna `uuid` como `NOT NULL`
+        foreach ($tables as $table) {
+            $tableName = array_values((array)$table)[0];
             Schema::table($tableName, function (Blueprint $table) {
                 $table->uuid('uuid')->nullable(false)->change();
             });
