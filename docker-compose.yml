@@ -1,0 +1,33 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: compuservicio-app
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - laravel
+
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: compuservicio
+      MYSQL_USER: compuservicio
+      MYSQL_PASSWORD: compuservicio548752
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - laravel
+
+networks:
+  laravel:
+
+volumes:
+  dbdata:
