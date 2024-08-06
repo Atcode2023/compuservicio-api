@@ -20,7 +20,7 @@ class AddUuidAndLastSyncedAtToAllTables extends Migration
             Schema::table($tableName, function (Blueprint $table) use ($tableName) {
                 if (!Schema::hasColumn($tableName, 'uuid')) {
                     $uuid = Uuid::uuid4();
-                    $table->uuid('uuid')->unique()->default($uuid->toString());
+                    $table->uuid('uuid')->default($uuid->toString());
                 }
                 if (!Schema::hasColumn($tableName, 'last_synced_at')) {
                     $table->timestamp('last_synced_at')->nullable();
