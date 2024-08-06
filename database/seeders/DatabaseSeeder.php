@@ -23,11 +23,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(MasterSeeder::class);
 
-        Excel::import(new UserImport, public_path('storage/usuarios.csv'));
+        /* Excel::import(new UserImport, public_path('storage/usuarios.csv'));
         Excel::import(new CustomerImport, public_path('storage/cliente.csv'));
         Excel::import(new ServiceImport, public_path('storage/servicio.csv'));
         Excel::import(new PieceServiceImport, public_path('storage/pieza_servi.csv'));
         Excel::import(new ReportServiceImport, public_path('storage/repo_servi.csv'));
-        Excel::import(new InvoiceImport, public_path('storage/pagos.csv'));
+        Excel::import(new InvoiceImport, public_path('storage/pagos.csv')); */
     }
 }
