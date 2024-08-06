@@ -16,11 +16,19 @@ class AddUuidAndLastSyncedAtToAllTables extends Migration
 
             Schema::table($tableName, function (Blueprint $table) use ($tableName) {
                 if (!Schema::hasColumn($tableName, 'uuid')) {
-                    $table->uuid('uuid')->unique()->default(DB::raw('(UUID())'));
+                    $table->uuid('uuid')->unique()->nullable();
                 }
                 if (!Schema::hasColumn($tableName, 'last_synced_at')) {
                     $table->timestamp('last_synced_at')->nullable();
                 }
+            });
+
+            // Actualiza las filas existentes para establecer el valor de `uuid`
+            DB::table($tableName)->update(['uuid' => DB::raw('UUID()')]);
+
+            // Establece la columna `uuid` como `NOT NULL`
+            Schema::table($tableName, function (Blueprint $table) {
+                $table->uuid('uuid')->nullable(false)->change();
             });
         }
     }
