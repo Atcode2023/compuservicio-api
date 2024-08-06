@@ -18,26 +18,12 @@ class AddUuidAndLastSyncedAtToAllTables extends Migration
             }
             Schema::table($tableName, function (Blueprint $table) use ($tableName) {
                 if (!Schema::hasColumn($tableName, 'uuid')) {
-                    $table->string('uuid')->unique()->nullable();
+                    $table->uuid('uuid')->unique()->default(DB::raw('(UUID())'));
                 }
                 if (!Schema::hasColumn($tableName, 'last_synced_at')) {
                     $table->timestamp('last_synced_at')->nullable();
                 }
             });
-
-            // Create trigger to set UUID on new rows
-            $trigger = "
-                CREATE TRIGGER set_uuid_before_insert
-                BEFORE INSERT ON `{$tableName}`
-                FOR EACH ROW
-                BEGIN
-                    IF NEW.uuid IS NULL THEN
-                        SET NEW.uuid = UUID();
-                    END IF;
-                END;
-            ";
-
-            DB::unprepared($trigger);
         }
     }
 
@@ -51,11 +37,6 @@ class AddUuidAndLastSyncedAtToAllTables extends Migration
             if ($tableName === 'migrations') {
                 continue;
             }
-
-            $triggerName = "set_uuid_before_insert";
-            $dropTrigger = "DROP TRIGGER IF EXISTS `{$triggerName}`";
-            DB::unprepared($dropTrigger);
-
             Schema::table($tableName, function (Blueprint $table) {
                 $table->dropColumn(['uuid', 'last_synced_at']);
             });
