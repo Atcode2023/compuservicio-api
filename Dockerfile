@@ -1,15 +1,17 @@
-FROM php:8.2-apache
+FROM php:8.1-apache
 
-# Instala las extensiones de PHP necesarias
+# Install PHP extensions and other necessary packages
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libicu-dev \
+    zlib1g-dev \
     zip \
     unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install pdo_mysql
+    && docker-php-ext-install gd pdo_mysql intl zip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
