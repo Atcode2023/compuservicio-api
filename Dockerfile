@@ -1,6 +1,7 @@
-FROM php:8.1-apache
+# Usar la imagen oficial de PHP con FPM
+FROM php:8.1-fpm
 
-# Install PHP extensions and other necessary packages
+# Instalar extensiones PHP y otros paquetes necesarios
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -14,23 +15,18 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install gd pdo_mysql intl zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instala Composer
+# Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Configura Apache
-COPY ./apache/laravel.conf /etc/apache2/sites-available/000-default.conf
-RUN a2enmod rewrite
-
-# Copia el código de la aplicación al contenedor
+# Copiar el código de la aplicación al contenedor
 COPY . /var/www/html
 
-# Otorga permisos al almacenamiento y cache
+# Otorgar permisos al almacenamiento y cache
 RUN chown -R www-data:www-data /var/www
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-RUN composer install
-# Exponer el puerto 80
-EXPOSE 80
 
-# Ejecuta el servidor Apache
-CMD ["apache2-foreground"]
+# Exponer el puerto para PHP-FPM
+EXPOSE 8000
+
+CMD ["php-fpm"]
